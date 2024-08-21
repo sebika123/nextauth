@@ -6,7 +6,7 @@ import { connectMongoDB } from "@/lib/mongodb";
 import User from "@/models/user";
 import bcrypt from "bcryptjs";
 
-// Define the authentication options
+
 export const authOptions = {
   providers: [
     GithubProvider({
@@ -16,6 +16,12 @@ export const authOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      authorization: {
+        params: {
+          prompt: "select_account",
+        },
+      },
+      
     }),
     CredentialsProvider({
       name: "credentials",

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Container, Box,Card,Typography, TextField, Button, Alert, Stack } from "@mui/material";
 
 export default function RegisterForm() {
   const [name, setName] = useState("");
@@ -61,41 +62,77 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="grid place-items-center h-screen">
-      <div className="shadow-lg p-5 rounded-lg border-t-4 border-blue-400">
-        <h1 className="text-xl font-bold my-4">Register</h1>
+    <Container 
+      component="main"
+      maxWidth="xs"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100vh',
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-          <input
+        marginTop: 0
+      }}
+     
+    >
+<Card sx={{ width: '100%', maxWidth: 400, padding: 3 , border: '1px solid black'}}>
+
+<Box display="flex" justifyContent="center" alignItems="center" >
+
+<Typography variant="h4" component="h1"  gutterBottom>
+        Register
+      </Typography>
+</Box>
+      <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+        <Stack spacing={2}>
+          <TextField
+            label="Full Name"
+            type="text"
+            variant="outlined"
+            fullWidth
+            required
             onChange={(e) => setName(e.target.value)}
-            type="text"
-            placeholder="Full Name"
           />
-          <input
+          <TextField
+            label="Email"
+            type="email"
+            variant="outlined"
+            fullWidth
+            required
             onChange={(e) => setEmail(e.target.value)}
-            type="text"
-            placeholder="Email"
           />
-          <input
-            onChange={(e) => setPassword(e.target.value)}
+          <TextField
+            label="Password"
             type="password"
-            placeholder="Password"
+            variant="outlined"
+            fullWidth
+            required
+            onChange={(e) => setPassword(e.target.value)}
           />
-          <button className="bg-blue-600 text-white font-bold cursor-pointer px-6 py-2">
+          <Button
+            type="submit"
+            variant="outlined"
+            color="primary"
+            fullWidth
+          >
             Register
-          </button>
-
+          </Button>
           {error && (
-            <div className="bg-red-500 text-white w-fit text-sm py-1 px-3 rounded-md mt-2">
+            <Alert severity="error" variant="outlined">
               {error}
-            </div>
+            </Alert>
           )}
-
-          <Link className="text-sm mt-3 text-right" href={"/"}>
-            Already have an account? <span className="underline">Login</span>
+          <Link href="/" passHref>
+          <Box display="flex" justifyContent="center" alignItems="center" >
+            <Typography variant="body2" align="right" >
+              Already have an account? <span style={{ textDecoration: 'underline',color:"blue" }}>Login</span>
+            </Typography>
+            </Box>
           </Link>
-        </form>
-      </div>
-    </div>
+        </Stack>
+      </form>
+</Card>
+    </Container>
   );
 }

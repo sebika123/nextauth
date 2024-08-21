@@ -1,7 +1,7 @@
 import Header from "@/components/Header";
 import LoginForm from "@/components/LoginForm";
 import { getServerSession } from "next-auth";
-import { authOptions } from "./api/auth/[...nextauth]/route"; // Ensure this is correctly exported
+import { authOptions } from "./api/auth/[...nextauth]/route"; 
 import { redirect } from "next/navigation";
 export default async function Home() {
 
@@ -16,7 +16,7 @@ export default async function Home() {
     <>
       <Header />
       <main>
-        <LoginForm />
+        {/* <LoginForm /> */}
       </main>
     </>
   );
