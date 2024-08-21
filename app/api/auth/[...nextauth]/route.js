@@ -1,10 +1,13 @@
-import NextAuth from "next-auth/next";
+import NextAuth from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
-import EmailProvider from "next-auth/providers/email";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { connectMongoDB } from "@/lib/mongodb";
+import User from "@/models/user";
+import bcrypt from "bcryptjs";
 
-
-const handler = NextAuth({
+// Define the authentication options
+export const authOptions = {
   providers: [
     GithubProvider({
       clientId: process.env.GITHUB_CLIENT_ID,
@@ -14,19 +17,45 @@ const handler = NextAuth({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
-   
-    // EmailProvider({
-    //   server: {
-    //     host: process.env.EMAIL_SERVER_HOST,
-    //     port: process.env.EMAIL_SERVER_PORT,
-    //     auth: {
-    //       user: process.env.EMAIL_SERVER_USER,
-    //       pass: process.env.EMAIL_SERVER_PASSWORD
-    //     }
-    //   },
-    //   from: process.env.EMAIL_FROM
-    // }),
-  ],
-});
+    CredentialsProvider({
+      name: "credentials",
+      credentials: {},
+      async authorize(credentials) {
+        const { email, password } = credentials;
 
+        try {
+          await connectMongoDB();
+          const user = await User.findOne({ email });
+
+          if (!user) {
+            return null; // User not found
+          }
+
+          const passwordsMatch = await bcrypt.compare(password, user.password);
+
+          if (!passwordsMatch) {
+            return null; // Passwords do not match
+          }
+
+          return user; // Return user if credentials are valid
+        } catch (error) {
+          console.log("Error during authorization:", error);
+          return null; // Return null in case of error
+        }
+      },
+    }),
+  ],
+  session: {
+    strategy: "jwt", // Use JWT for session management
+  },
+  secret: process.env.NEXTAUTH_SECRET, // Secret for encrypting JWTs
+  pages: {
+    signIn: "/", // Custom sign-in page route
+  },
+};
+
+// Initialize NextAuth with the authentication options
+const handler = NextAuth(authOptions);
+
+// Export the handler for use in API routes
 export { handler as GET, handler as POST };
