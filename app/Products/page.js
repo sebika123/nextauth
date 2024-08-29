@@ -30,7 +30,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AddIcon from "@mui/icons-material/Add";
 import axios from "axios";
-
+import { v4 as uuidv4 } from 'uuid';
 const initialItems = [
   {
     id: "1",
@@ -122,7 +122,7 @@ const ProductCard = ({ id, name, description, image }) => {
   };
 
   const handleClick = () => {
-    // Navigate to the dynamic product page
+
     router.push(`/Products/${id}`);
   };
 
@@ -179,6 +179,7 @@ const ProductCard = ({ id, name, description, image }) => {
 const ProductsPage = () => {
   const [items, setItems] = useState(initialItems);
   const [newProduct, setNewProduct] = useState({
+    id: uuidv4(),
     name: "",
     description: "",
     img: "",

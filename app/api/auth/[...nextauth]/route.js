@@ -1,6 +1,9 @@
+
+
 import NextAuth from 'next-auth';
 import GitHubProvider from 'next-auth/providers/github';
 import GoogleProvider from 'next-auth/providers/google';
+import ZohoProvider from 'next-auth/providers/zoho';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { connectMongoDB } from '@/lib/mongodb';
 import User from '@/models/user';
@@ -13,9 +16,7 @@ export const authOptions = {
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
       authorization: {
         params: {
-          prompt:"consent",
-          // GitHub does not have `prompt` parameter, but this ensures a fresh login prompt
-          // allow_signup: 'false', // This will force GitHub to show the login screen every time
+          prompt: "consent",
         },
       },
     }),
@@ -24,7 +25,16 @@ export const authOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       authorization: {
         params: {
-          prompt: 'select_account', // Ensure Google shows account selection
+          prompt: 'select_account', 
+        },
+      },
+    }),
+    ZohoProvider({
+      clientId: process.env.ZOHO_CLIENT_ID,
+      clientSecret: process.env.ZOHO_CLIENT_SECRET,
+      authorization: {
+        params: {
+          prompt: "consent",
         },
       },
     }),
@@ -62,40 +72,26 @@ export const authOptions = {
   session: {
     strategy: 'jwt', // Use JWT for session management
   },
-  // callbacks: {
-  //   async signIn({ user }) {
-  //     // Optional: Add custom logic for sign-in
-  //     return true; // Return true to allow sign-in
-  //   },
-  //   async redirect({ url, baseUrl }) {
-  //     // Redirect to a specific URL after sign-in
-  //     return url.startsWith(baseUrl) ? url : baseUrl;
-  //   },
-  //   async session({ session, token }) {
-  //     // Optional: Add custom logic for session management
-  //     return session; // Return the session object
-  //   },
-  // },
+  callbacks: {
+    async jwt({ token, user, account }) {
+      if (account) {
+        console.log('Access Token:', account.access_token);
+        console.log('Refresh Token:', account.refresh_token);
+        token.accessToken = account.access_token;
+        token.refreshToken = account.refresh_token;
+        console.log('acess',token.accessToken );
+        console.log('refresh token',token.refreshToken );
+      }
+      return token;
+    },
+    async session({ session, token }) {
 
-
-  // callbacks: {
-  //   async signIn({ user }) {
-  //     let isAllowedToSignIn = true
-  //     const allowedUser = [
-  //       'Sebika123',
-  //     ];
-  //     console.log(user);
-  //     if (allowedUser.includes(String(user.id))) {
-  //       isAllowedToSignIn = true
-  //     }
-  //     else {
-  //       isAllowedToSignIn = false
-
-  //     }
-  //     return isAllowedToSignIn
-  //   }
-  // },
-  secret: process.env.NEXTAUTH_SECRET, // Secret for encryption
+      session.accessToken = token.accessToken;
+      session.refreshToken = token.refreshToken;
+      return session;
+    },
+  },
+  secret: process.env.NEXTAUTH_SECRET, 
   pages: {
     signIn: '/', // Custom sign-in page route
   },

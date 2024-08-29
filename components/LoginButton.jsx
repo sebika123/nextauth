@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Container, Box,Typography, TextField, Button, Alert, Stack, Card, CardContent, IconButton } from "@mui/material";
 import GitHubIcon from '@mui/icons-material/GitHub';
 import GoogleIcon from '@mui/icons-material/Google';
+// import ZohoIcon from '@mui/icons-material/Zoho';
 import Link from "next/link";
 
 export default function Login() {
@@ -129,6 +130,23 @@ export default function Login() {
                 Sign in with Google
               </Typography>
             </Button>
+
+
+            <Button
+              variant="outlined"
+              color="primary"
+       
+              onClick={() => signIn("zoho")}
+            
+            >
+              
+              {/* <ZohoIcon sx={{ marginRight: 1 }} /> */}
+              <Typography style={{ color: 'black' }}>
+                Sign in with Zoho
+              </Typography>
+            </Button>
+
+
           </Stack>
         </CardContent>
       </Card>
